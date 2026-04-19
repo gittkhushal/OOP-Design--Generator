@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h1>Describe your software</h1>
+  <p class="muted">
+    Enter a plain-English description of what the system should do. The AI will
+    extract classes, attributes, methods and relationships, generate a code
+    skeleton in the language you pick, and render a UML class diagram.
+  </p>
+
+  <form method="post" action="{{ url_for('generate') }}" class="gen-form">
+    <label for="description">Software description</label>
+    <textarea
+      id="description"
+      name="description"
+      rows="10"
+      placeholder="Example: A library management system where members borrow books. Each member has a profile and a borrowing history. Books belong to categories and can have multiple copies. Librarians can add or remove books and approve borrow requests."
+      required
+    ></textarea>
+
+    <div class="row">
+      <div class="field">
+        <label for="language">Target language</label>
+        <select id="language" name="language">
+          {% for lang in languages %}
+            <option value="{{ lang }}">{{ lang }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field grow">
+        <button type="submit" class="primary">Generate</button>
+      </div>
+    </div>
+  </form>
+</section>
+
+<section class="card subtle">
+  <h2>What you'll get</h2>
+  <ul class="checklist">
+    <li>List of classes with attributes &amp; methods</li>
+    <li>Relationships (inheritance, association, aggregation, composition, dependency)</li>
+    <li>Clean code skeleton with boilerplate</li>
+    <li>PlantUML source + rendered UML diagram</li>
+    <li>Copy &amp; download buttons for every block</li>
+  </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Result · OOP Design Generator{% endblock %}
+{% block content %}
+
+<section class="card">
+  <div class="result-head">
+    <h1>Generated design</h1>
+    <a class="btn ghost" href="{{ url_for('index') }}">← New description</a>
+  </div>
+  <p class="muted"><strong>Language:</strong> {{ language }}</p>
+  <details>
+    <summary>Original description</summary>
+    <pre class="plain">{{ description }}</pre>
+  </details>
+</section>
+
+<section class="card">
+  <h2>Classes</h2>
+  {% if parsed.classes %}
+    <ul class="pill-list">
+      {% for c in parsed.classes %}<li>{{ c }}</li>{% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">No classes parsed.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Attributes</h2>
+  {% if parsed.attributes %}
+    {% for cls, items in parsed.attributes.items() %}
+      <div class="block">
+        <h3>{{ cls }}</h3>
+        <ul>{% for it in items %}<li><code>{{ it }}</code></li>{% endfor %}</ul>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No attributes parsed.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Methods</h2>
+  {% if parsed.methods %}
+    {% for cls, items in parsed.methods.items() %}
+      <div class="block">
+        <h3>{{ cls }}</h3>
+        <ul>{% for it in items %}<li><code>{{ it }}</code></li>{% endfor %}</ul>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No methods parsed.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Relationships</h2>
+  {% if parsed.relationships %}
+    <table class="rel-table">
+      <thead>
+        <tr><th>Left</th><th>Symbol</th><th>Right</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        {% for r in parsed.relationships %}
+          <tr>
+            <td>{{ r.left }}</td>
+            <td><code>{{ r.symbol }}</code></td>
+            <td>{{ r.right }}</td>
+            <td>{{ r.label }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No relationships parsed.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <div class="block-head">
+    <h2>Code skeleton ({{ language }})</h2>
+    <div class="actions">
+      <button type="button" class="btn" data-copy-target="#code-block">Copy</button>
+      <form method="post" action="{{ url_for('download') }}" class="inline">
+        <input type="hidden" name="content" value="{{ parsed.code }}" />
+        <input type="hidden" name="filename" value="design.{{ code_ext }}" />
+        <button type="submit" class="btn">Download .{{ code_ext }}</button>
+      </form>
+    </div>
+  </div>
+  <pre><code id="code-block" class="language-{{ language|lower if language != 'C++' else 'cpp' }}">{{ parsed.code }}</code></pre>
+</section>
+
+<section class="card">
+  <div class="block-head">
+    <h2>PlantUML source</h2>
+    <div class="actions">
+      <button type="button" class="btn" data-copy-target="#puml-block">Copy</button>
+      <form method="post" action="{{ url_for('download') }}" class="inline">
+        <input type="hidden" name="content" value="{{ parsed.plantuml }}" />
+        <input type="hidden" name="filename" value="diagram.puml" />
+        <button type="submit" class="btn">Download .puml</button>
+      </form>
+    </div>
+  </div>
+  <pre><code id="puml-block" class="language-none">{{ parsed.plantuml }}</code></pre>
+</section>
+
+<section class="card">
+  <h2>UML class diagram</h2>
+  {% if diagram.chosen %}
+    <div class="diagram-wrap">
+      <img
+        id="uml-img"
+        src="{{ diagram.chosen }}"
+        data-primary="{{ diagram.primary }}"
+        data-fallback="{{ diagram.fallback }}"
+        alt="UML class diagram"
+      />
+    </div>
+    <p class="muted small">
+      Source:
+      <a href="{{ diagram.chosen }}" target="_blank" rel="noopener">open in new tab</a>
+      · primary: plantuml.com · fallback: kroki.io
+    </p>
+  {% else %}
+    <p class="muted">No PlantUML source was produced.</p>
+  {% endif %}
+</section>
+
+{% endblock %}
